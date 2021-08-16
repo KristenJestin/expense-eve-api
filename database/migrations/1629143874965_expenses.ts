@@ -7,7 +7,7 @@ export default class Expenses extends BaseSchema {
         this.schema.createTable(this.tableName, (table) => {
             table.uuid('id').primary()
 
-            table.string('title').notNullable()
+            table.string('title', 255).notNullable()
             table.decimal('cost', 10, 2).notNullable()
 
             /**

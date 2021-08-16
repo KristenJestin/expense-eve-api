@@ -20,4 +20,11 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.resource('expenses', 'ExpensesController').apiOnly()
+// authentication
+Route.post('auth', 'LoginController.store')
+Route.delete('auth', 'LoginController.destroy')
+
+// feature routes
+Route.group(() => {
+    Route.resource('expenses', 'ExpensesController').apiOnly()
+}).middleware('auth')

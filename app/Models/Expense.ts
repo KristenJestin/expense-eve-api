@@ -1,10 +1,21 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeCreate, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import { v4 as uuid } from 'uuid'
+
+import User from 'App/Models/User'
 
 export default class Expense extends BaseModel {
     @column({ isPrimary: true })
     public id: string
+
+    @column()
+    public userId: string
+
+    @column()
+    public title: string
+
+    @column()
+    public cost: number
 
     @column.dateTime({ autoCreate: true })
     public createdAt: DateTime
@@ -17,9 +28,6 @@ export default class Expense extends BaseModel {
         model.id = uuid()
     }
 
-    @column()
-    public title: string
-
-    @column()
-    public cost: number
+    @belongsTo(() => User)
+    public author: BelongsTo<typeof User>
 }

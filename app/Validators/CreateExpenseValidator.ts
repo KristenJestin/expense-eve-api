@@ -5,7 +5,7 @@ export default class CreateExpenseValidator {
     constructor(protected ctx: HttpContextContract) {}
 
     public schema = schema.create({
-        title: schema.string({ trim: true }),
+        title: schema.string({ trim: true }, [rules.maxLength(254)]),
         cost: schema.number([rules.unsigned()]),
     })
 
