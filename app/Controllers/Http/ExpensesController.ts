@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
+import UserModel from 'App/Models/User'
 import ExpenseModel from 'App/Models/Expense'
 import CreateExpenseValidator from 'App/Validators/CreateExpenseValidator'
 import RecordNotFoundException from 'App/Exceptions/RecordNotFoundException'
@@ -9,11 +10,13 @@ export default class ExpensesController {
         // get page
         let page = Number(request.input('page'))
         page = isNaN(page) || page < 1 ? 1 : page
+        const limit = 10
 
         // data
         const expenses = await ExpenseModel.query()
             .where('user_id', auth.user!.id)
             .orderBy('createdAt', 'desc')
+            .paginate(page, limit)
 
         // response
         return response.json(expenses)
@@ -32,10 +35,7 @@ export default class ExpensesController {
 
     public async show({ params, auth, response }: HttpContextContract) {
         // data
-        const expense = await ExpenseModel.find(params.id)
-
-        // check if user own it
-        if (!expense || expense.userId !== auth.user!.id) throw new RecordNotFoundException()
+        const expense = await this.findExpenseOrFail(params.id, auth.user!)
 
         // response
         return response.json(expense)
@@ -44,12 +44,7 @@ export default class ExpensesController {
     public async update({ request, params, auth, response }: HttpContextContract) {
         // request data
         const data = await request.validate(CreateExpenseValidator)
-
-        // object
-        const expense = await ExpenseModel.find(params.id)
-
-        // check if user own it
-        if (!expense || expense.userId !== auth.user!.id) throw new RecordNotFoundException()
+        const expense = await this.findExpenseOrFail(params.id, auth.user!)
 
         // database
         expense.merge(data)
@@ -60,16 +55,24 @@ export default class ExpensesController {
     }
 
     public async destroy({ params, auth, response }: HttpContextContract) {
-        // object
-        const expense = await ExpenseModel.find(params.id)
-
-        // check if user own it
-        if (!expense || expense.userId !== auth.user!.id) throw new RecordNotFoundException()
-
+        const expense = await this.findExpenseOrFail(params.id, auth.user!)
         // database
         await expense.delete()
 
         // reponse
         return response.noContent()
     }
+
+    //#region privates
+    private async findExpenseOrFail(id: number, user: UserModel) {
+        // data
+        const expense = await ExpenseModel.find(id)
+
+        // check if user own it
+        if (!expense || expense.userId !== user.id) throw new RecordNotFoundException()
+
+        // object
+        return expense
+    }
+    //#endregion
 }

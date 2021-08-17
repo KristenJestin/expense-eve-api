@@ -17,6 +17,9 @@ export default class Expense extends BaseModel {
     @column()
     public cost: number
 
+    @column.dateTime()
+    public at: DateTime
+
     @column.dateTime({ autoCreate: true })
     public createdAt: DateTime
 
