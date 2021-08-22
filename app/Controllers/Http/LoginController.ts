@@ -7,9 +7,15 @@ export default class LoginController {
         const password = request.input('password')
 
         // response
-        return await auth.use('api').attempt(email, password, {
+        const data = await auth.use('api').attempt(email, password, {
             expiresIn: '7days',
         })
+        return {
+            type: data.type,
+            token: data.token,
+            expire_at: data.expiresAt,
+            user_id: data.user.id,
+        }
     }
 
     public async destroy({ auth, response }: HttpContextContract) {

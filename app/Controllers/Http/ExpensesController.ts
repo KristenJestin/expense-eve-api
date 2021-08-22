@@ -10,7 +10,7 @@ export default class ExpensesController {
         // get page
         let page = Number(request.input('page'))
         page = isNaN(page) || page < 1 ? 1 : page
-        const limit = 10
+        const limit = 30
 
         // data
         const expenses = await ExpenseModel.query()
