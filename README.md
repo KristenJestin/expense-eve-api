@@ -65,6 +65,18 @@ DB_PASSWORD=
 DB_DB_NAME=lucid
 ```
 
+Migrate database
+
+```bash
+  node ace migration:run
+```
+
+_(OPTIONAL)_ Seed database
+
+```bash
+  node ace db:seed
+```
+
 Start the server
 
 ```bash
